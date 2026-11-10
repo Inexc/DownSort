@@ -1,12 +1,13 @@
-; Script generated for DownSort Inno Setup Installer
+; ==============================================================================
+; DownSort - Официальный установщик Windows (Inno Setup)
+; ==============================================================================
 #define MyAppName "DownSort"
 #define MyAppVersion "0.1.0"
-#define MyAppPublisher "DownSort"
+#define MyAppPublisher "DownSort Team"
 #define MyAppURL "https://github.com/Inexc/DownSort"
 #define MyAppExeName "downsort.exe"
 
 [Setup]
-; NOTE: The value of AppId uniquely identifies this application.
 AppId={{9F5F6C62-1082-4EBE-9A2E-C246E563065A}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -16,23 +17,27 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={localappdata}\Programs\{#MyAppName}
 DisableProgramGroupPage=yes
-; PrivilegesRequired=lowest allows installation without administrator privileges (UAC prompt)
+; Установка для текущего пользователя без назойливых запросов UAC / прав администратора
 PrivilegesRequired=lowest
 OutputDir=..\..\dist
-OutputBaseFilename=DownSort-Setup-v{#MyAppVersion}
+OutputBaseFilename=DownSort-Setup
 SetupIconFile=..\..\crates\app\downsort.ico
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
 UninstallDisplayIcon={app}\{#MyAppExeName}
 UninstallDisplayName={#MyAppName}
+AppComments=Умный анализатор и уборщик папки Загрузки
+VersionInfoVersion={#MyAppVersion}
+VersionInfoDescription=Установщик DownSort
+VersionInfoProductName={#MyAppName}
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce
 
 [Files]
 Source: "..\..\target\release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion

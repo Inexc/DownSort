@@ -1,0 +1,49 @@
+================================================================================
+                    DOWNSORT — HOW TO INSTALL AND RUN
+================================================================================
+
+DownSort is a smart, high-performance Downloads folder analyzer and cleaner.
+
+--------------------------------------------------------------------------------
+1. WINDOWS
+--------------------------------------------------------------------------------
+
+Option A: Standard Installer (Recommended)
+  1. Open the "dist" folder.
+  2. Run "DownSort-Setup.exe".
+  3. Click "Next" -> "Install" -> "Finish".
+  Desktop and Start Menu shortcuts will be created automatically.
+
+Option B: Portable (No Installation)
+  1. Open "dist/DownSort-Portable-v0.1.0.zip".
+  2. Extract it anywhere you like.
+  3. Double-click "DownSort.exe" to run.
+
+Option C: Batch Script
+  1. Open "installer/windows".
+  2. Double-click "install.bat".
+
+--------------------------------------------------------------------------------
+2. LINUX (Ubuntu, Debian, Fedora, Arch, Manjaro, Mint)
+--------------------------------------------------------------------------------
+
+Option A: Single command terminal install
+  1. Open terminal in the project directory.
+  2. Run:
+       bash installer/linux/install.sh
+  3. Launch from your application menu ("DownSort") or type:
+       downsort
+
+Option B: System-wide install (for all users)
+  sudo bash installer/linux/install.sh
+
+Option C: Uninstall
+  bash installer/linux/uninstall.sh
+
+--------------------------------------------------------------------------------
+KEYBOARD SHORTCUTS:
+--------------------------------------------------------------------------------
+  F11 or Alt + Enter — Toggle Fullscreen
+  Mouse / Arrows    — Navigate and select
+  Esc                — Close modal dialogs
+================================================================================

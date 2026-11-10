@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-# DownSort Linux Installer
+# DownSort - Простой установщик для Linux / Simple Linux Installer
 # ==============================================================================
 set -e
 
@@ -8,97 +8,104 @@ APP_NAME="downsort"
 DISPLAY_NAME="DownSort"
 VERSION="0.1.0"
 
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-# Detect root / user install mode
+echo -e "${YELLOW}====================================================${NC}"
+echo -e "${YELLOW}         Установка ${DISPLAY_NAME} v${VERSION} для Linux         ${NC}"
+echo -e "${YELLOW}====================================================${NC}"
+
+# Определение режима: для текущего пользователя или всей системы
 if [ "$EUID" -eq 0 ]; then
     INSTALL_BIN="/usr/local/bin"
     INSTALL_APPS="/usr/share/applications"
     INSTALL_ICONS="/usr/share/icons/hicolor"
-    MODE="system-wide"
+    echo -e "${BLUE}[i] Режим установки: для всех пользователей системы (root)${NC}"
 else
     INSTALL_BIN="${HOME}/.local/bin"
     INSTALL_APPS="${HOME}/.local/share/applications"
     INSTALL_ICONS="${HOME}/.local/share/icons/hicolor"
-    MODE="user"
+    echo -e "${BLUE}[i] Режим установки: для текущего пользователя (${USER})${NC}"
 fi
 
-echo "============================================="
-echo " Installing ${DISPLAY_NAME} v${VERSION} (${MODE})"
-echo "============================================="
-
-# 1. Locate binary
-SRC_BIN="${ROOT_DIR}/target/release/${APP_NAME}"
-if [ ! -f "${SRC_BIN}" ]; then
-    # Check if a prebuilt binary exists in current script dir
-    if [ -f "${SCRIPT_DIR}/${APP_NAME}" ]; then
-        SRC_BIN="${SCRIPT_DIR}/${APP_NAME}"
-    else
-        echo "Error: Binary not found at ${SRC_BIN}"
-        echo "Please build with 'cargo build --release' first or provide '${APP_NAME}'."
-        exit 1
-    fi
+# 1. Поиск исполняемого файла
+SRC_BIN=""
+if [ -f "${ROOT_DIR}/target/release/${APP_NAME}" ]; then
+    SRC_BIN="${ROOT_DIR}/target/release/${APP_NAME}"
+elif [ -f "${SCRIPT_DIR}/${APP_NAME}" ]; then
+    SRC_BIN="${SCRIPT_DIR}/${APP_NAME}"
+elif [ -f "./${APP_NAME}" ]; then
+    SRC_BIN="./${APP_NAME}"
+else
+    echo -e "${RED}[✕] Ошибка: исполняемый файл '${APP_NAME}' не найден!${NC}"
+    echo "Сначала выполните сборку: cargo build --release"
+    exit 1
 fi
 
-# 2. Create destination directories
+echo -e "${BLUE}[1/4] Копирование программы в ${INSTALL_BIN}/${APP_NAME}...${NC}"
 mkdir -p "${INSTALL_BIN}"
-mkdir -p "${INSTALL_APPS}"
+cp -f "${SRC_BIN}" "${INSTALL_BIN}/${APP_NAME}"
+chmod +x "${INSTALL_BIN}/${APP_NAME}"
+
+echo -e "${BLUE}[2/4] Установка значков приложения...${NC}"
 mkdir -p "${INSTALL_ICONS}/scalable/apps"
 mkdir -p "${INSTALL_ICONS}/256x256/apps"
 mkdir -p "${INSTALL_ICONS}/128x128/apps"
 mkdir -p "${INSTALL_ICONS}/64x64/apps"
 mkdir -p "${INSTALL_ICONS}/32x32/apps"
 
-# 3. Copy executable
-echo "Installing binary to ${INSTALL_BIN}/${APP_NAME}..."
-cp -f "${SRC_BIN}" "${INSTALL_BIN}/${APP_NAME}"
-chmod +x "${INSTALL_BIN}/${APP_NAME}"
-
-# 4. Copy icons
 ICON_SVG="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-mono-f0a21c.svg"
 if [ -f "${ICON_SVG}" ]; then
     cp -f "${ICON_SVG}" "${INSTALL_ICONS}/scalable/apps/${APP_NAME}.svg"
 fi
 
-ICON_256="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-app-icon-256.png"
-if [ -f "${ICON_256}" ]; then
-    cp -f "${ICON_256}" "${INSTALL_ICONS}/256x256/apps/${APP_NAME}.png"
-fi
+for sz in 256 128 64 32; do
+    PNG_FILE="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-app-icon-${sz}.png"
+    if [ -f "${PNG_FILE}" ]; then
+        cp -f "${PNG_FILE}" "${INSTALL_ICONS}/${sz}x${sz}/apps/${APP_NAME}.png"
+    fi
+done
 
-ICON_128="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-app-icon-128.png"
-if [ -f "${ICON_128}" ]; then
-    cp -f "${ICON_128}" "${INSTALL_ICONS}/128x128/apps/${APP_NAME}.png"
-fi
+echo -e "${BLUE}[3/4] Создание ярлыка в меню приложений...${NC}"
+mkdir -p "${INSTALL_APPS}"
+cat << 'EOF' > "${INSTALL_APPS}/${APP_NAME}.desktop"
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=DownSort
+GenericName=Уборщик Загрузок
+GenericName[en]=Downloads Cleaner
+Comment=Умный анализатор и уборщик папки Загрузки
+Comment[en]=Smart Downloads folder analyzer, cleaner and duplicate finder
+Exec=downsort %F
+Icon=downsort
+Terminal=false
+Categories=Utility;FileManager;System;Archiving;
+Keywords=downloads;cleanup;duplicates;clean;storage;analyzer;загрузки;уборка;дубликаты;
+StartupWMClass=downsort
+EOF
+chmod 644 "${INSTALL_APPS}/${APP_NAME}.desktop"
 
-ICON_64="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-app-icon-64.png"
-if [ -f "${ICON_64}" ]; then
-    cp -f "${ICON_64}" "${INSTALL_ICONS}/64x64/apps/${APP_NAME}.png"
-fi
-
-ICON_32="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-app-icon-32.png"
-if [ -f "${ICON_32}" ]; then
-    cp -f "${ICON_32}" "${INSTALL_ICONS}/32x32/apps/${APP_NAME}.png"
-fi
-
-# 5. Copy desktop entry
-echo "Installing desktop launcher to ${INSTALL_APPS}/${APP_NAME}.desktop..."
-DESKTOP_SRC="${SCRIPT_DIR}/downsort.desktop"
-if [ -f "${DESKTOP_SRC}" ]; then
-    cp -f "${DESKTOP_SRC}" "${INSTALL_APPS}/${APP_NAME}.desktop"
-    chmod 644 "${INSTALL_APPS}/${APP_NAME}.desktop"
-fi
-
-# 6. Update system icon & desktop caches
+echo -e "${BLUE}[4/4] Обновление системных баз ярлыков и иконок...${NC}"
 if command -v update-desktop-database >/dev/null 2>&1; then
-    update-desktop-database "${INSTALL_APPS}" || true
+    update-desktop-database "${INSTALL_APPS}" 2>/dev/null || true
 fi
-
 if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    gtk-update-icon-cache -f -t "${INSTALL_ICONS}" || true
+    gtk-update-icon-cache -f -t "${INSTALL_ICONS}" 2>/dev/null || true
 fi
 
-echo "---------------------------------------------"
-echo " ${DISPLAY_NAME} installed successfully!"
-echo " Run by typing '${APP_NAME}' in terminal or launching from app menu."
-echo "---------------------------------------------"
+echo -e "${GREEN}====================================================${NC}"
+echo -e "${GREEN}  [✓] Программа ${DISPLAY_NAME} успешно установлена!  ${NC}"
+echo -e "${GREEN}====================================================${NC}"
+echo "Запуск:"
+echo " 1. Из меню приложений: введите в поиске 'DownSort'"
+echo " 2. Из терминала: команда 'downsort'"
+if [[ ":$PATH:" != *":${INSTALL_BIN}:"* ]] && [ "$EUID" -ne 0 ]; then
+    echo -e "${YELLOW}Примечание: убедитесь, что ${INSTALL_BIN} добавлен в вашу переменную PATH.${NC}"
+fi
