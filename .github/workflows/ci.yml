@@ -1,0 +1,62 @@
+name: CI & Multi-Platform Build
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    name: Test Core & App
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run Tests
+        run: cargo test --workspace
+
+  build-windows:
+    name: Build Windows Installer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build Optimized Release
+        run: cargo build --release
+      - name: Compile Inno Setup Installer
+        run: |
+          iscc installer/windows/setup.iss
+      - name: Upload Windows Setup Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DownSort-Windows-Installer
+          path: dist/DownSort-Setup-*.exe
+
+  build-linux:
+    name: Build Linux Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libasound2-dev libfontconfig1-dev
+      - name: Build Linux Binary
+        run: cargo build --release
+      - name: Package Linux Tarball
+        run: |
+          mkdir -p dist/downsort-linux-x86_64
+          cp target/release/downsort dist/downsort-linux-x86_64/
+          cp installer/linux/install.sh dist/downsort-linux-x86_64/
+          cp installer/linux/uninstall.sh dist/downsort-linux-x86_64/
+          cp installer/linux/downsort.desktop dist/downsort-linux-x86_64/
+          cp design/logos/kit/exports/downsort-symbol-mono-f0a21c.svg dist/downsort-linux-x86_64/
+          cp README.md dist/downsort-linux-x86_64/
+          tar -czvf dist/downsort-linux-x86_64.tar.gz -C dist downsort-linux-x86_64
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DownSort-Linux-Tarball
+          path: dist/downsort-linux-x86_64.tar.gz

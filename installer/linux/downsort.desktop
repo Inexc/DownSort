@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=DownSort
+GenericName=Downloads Cleaner
+Comment=Smart Downloads folder analyzer, cleaner and duplicate finder
+Exec=downsort %F
+Icon=downsort
+Terminal=false
+Categories=Utility;FileManager;System;Archiving;
+Keywords=downloads;cleanup;duplicates;clean;storage;analyzer;
+StartupWMClass=downsort
