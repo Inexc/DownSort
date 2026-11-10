@@ -40,8 +40,8 @@ chmod +x "${PKG_DIR}/usr/bin/${APP_NAME}"
 
 # Copy desktop and icon
 cp -f "${SCRIPT_DIR}/downsort.desktop" "${PKG_DIR}/usr/share/applications/downsort.desktop"
-cp -f "${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-mono-f0a21c.svg" "${PKG_DIR}/usr/share/icons/hicolor/scalable/apps/downsort.svg"
-cp -f "${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-app-icon-256.png" "${PKG_DIR}/usr/share/icons/hicolor/256x256/apps/downsort.png"
+cp -f "${ROOT_DIR}/assets/logo.svg" "${PKG_DIR}/usr/share/icons/hicolor/scalable/apps/downsort.svg"
+cp -f "${ROOT_DIR}/assets/icon-256.png" "${PKG_DIR}/usr/share/icons/hicolor/256x256/apps/downsort.png"
 
 # Build package
 if command -v dpkg-deb >/dev/null 2>&1; then

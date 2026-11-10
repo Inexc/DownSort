@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DownSort-Windows-Installer
-          path: dist/DownSort-Setup-*.exe
+          path: installer/windows/DownSort-Setup.exe
 
   build-linux:
     name: Build Linux Package
@@ -52,7 +52,7 @@ jobs:
           cp installer/linux/install.sh dist/downsort-linux-x86_64/
           cp installer/linux/uninstall.sh dist/downsort-linux-x86_64/
           cp installer/linux/downsort.desktop dist/downsort-linux-x86_64/
-          cp design/logos/kit/exports/downsort-symbol-mono-f0a21c.svg dist/downsort-linux-x86_64/
+          cp assets/logo.svg dist/downsort-linux-x86_64/
           cp README.md dist/downsort-linux-x86_64/
           tar -czvf dist/downsort-linux-x86_64.tar.gz -C dist downsort-linux-x86_64
       - name: Upload Linux Artifact

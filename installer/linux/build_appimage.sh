@@ -26,8 +26,8 @@ chmod +x "${APPDIR}/usr/bin/${APP_NAME}"
 cp -f "${SCRIPT_DIR}/downsort.desktop" "${APPDIR}/downsort.desktop"
 cp -f "${SCRIPT_DIR}/downsort.desktop" "${APPDIR}/usr/share/applications/downsort.desktop"
 
-ICON_SVG="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-mono-f0a21c.svg"
-ICON_PNG="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-app-icon-256.png"
+ICON_SVG="${ROOT_DIR}/assets/logo.svg"
+ICON_PNG="${ROOT_DIR}/assets/icon-256.png"
 
 cp -f "${ICON_PNG}" "${APPDIR}/downsort.png"
 cp -f "${ICON_PNG}" "${APPDIR}/usr/share/icons/hicolor/256x256/apps/downsort.png"

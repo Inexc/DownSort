@@ -19,9 +19,9 @@ DefaultDirName={localappdata}\Programs\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Установка для текущего пользователя без назойливых запросов UAC / прав администратора
 PrivilegesRequired=lowest
-OutputDir=..\..\dist
+OutputDir=.
 OutputBaseFilename=DownSort-Setup
-SetupIconFile=..\..\crates\app\downsort.ico
+SetupIconFile=..\..\assets\downsort.ico
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
@@ -41,7 +41,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "..\..\target\release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\crates\app\downsort.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\assets\downsort.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]

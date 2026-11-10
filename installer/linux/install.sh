@@ -60,13 +60,13 @@ mkdir -p "${INSTALL_ICONS}/128x128/apps"
 mkdir -p "${INSTALL_ICONS}/64x64/apps"
 mkdir -p "${INSTALL_ICONS}/32x32/apps"
 
-ICON_SVG="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-mono-f0a21c.svg"
+ICON_SVG="${ROOT_DIR}/assets/logo.svg"
 if [ -f "${ICON_SVG}" ]; then
     cp -f "${ICON_SVG}" "${INSTALL_ICONS}/scalable/apps/${APP_NAME}.svg"
 fi
 
 for sz in 256 128 64 32; do
-    PNG_FILE="${ROOT_DIR}/design/logos/kit/exports/downsort-symbol-app-icon-${sz}.png"
+    PNG_FILE="${ROOT_DIR}/assets/icon-${sz}.png"
     if [ -f "${PNG_FILE}" ]; then
         cp -f "${PNG_FILE}" "${INSTALL_ICONS}/${sz}x${sz}/apps/${APP_NAME}.png"
     fi

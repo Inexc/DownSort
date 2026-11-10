@@ -12,23 +12,16 @@
 
 ```
 DownSort/
-├── Cargo.toml               # Workspace manifest
+├── Cargo.toml               # Манифест Cargo workspace
+├── Cargo.lock
+├── assets/                  # Иконки и официальные логотипы приложения
 ├── crates/
-│   ├── core/                # Чистая бизнес-логика (без UI, покрыта юнит-тестами)
-│   │   ├── Cargo.toml
-│   │   └── src/
-│   │       ├── lib.rs       # Экспорты и комплексные юнит-тесты
-│   │       ├── category.rs  # Категоризация файлов по расширениям, цвета, названия
-│   │       ├── model.rs     # Структуры FileItem, CategoryStats, ScanSummary
-│   │       ├── scanner.rs   # Рекурсивное сканирование с ограничением глубины, вычисление возраста
-│   │       ├── duplicates.rs# Поиск дубликатов (размерный пре-фильтр + SHA-256, группировка)
-│   │       ├── stats.rs     # Расчёт объёмов, количества и статистики категорий
-│   │       └── trash_ops.rs # Интеграция с системной корзиной (trash crate)
-│   └── app/                 # Графический интерфейс на GPUI
-│       ├── Cargo.toml
-│       └── src/
-│           └── main.rs      # Окно, вёрстка, состояние и асинхронные обработчики
-└── README.md
+│   ├── core/                # Бизнес-логика (сканер, дубликаты, статистика)
+│   └── app/                 # Десктопный интерфейс на GPUI (Rust)
+├── installer/               # Готовые установщики
+│   ├── windows/             # DownSort-Setup.exe, DownSort-Portable.zip, install.bat
+│   └── linux/               # install.sh, downsort.desktop, сборка AppImage/.deb
+└── README.md                # Документация и руководство пользователя
 ```
 
 ---
@@ -152,10 +145,13 @@ cargo build --release
 Доступны два простых способа установки:
 
 1. **Графический установщик (Рекомендуется)**:
-   Запустите файл `dist/DownSort-Setup-v0.1.0.exe` (или скомпилируйте через `iscc installer/windows/setup.iss`). Он автоматически установит приложение, добавит ярлыки на Рабочий стол и в меню «Пуск», а также зарегистрирует деинсталлятор в системе.
+   Запустите файл [`installer/windows/DownSort-Setup.exe`](installer/windows/DownSort-Setup.exe). Он автоматически установит программу, добавит значки на Рабочий стол и в меню «Пуск», а также зарегистрирует деинсталлятор в системе.
 
-2. **Быстрая установка через PowerShell**:
-   Запустите файл `installer/windows/install.bat` (или выполните команду `powershell -ExecutionPolicy Bypass -File installer/windows/install.ps1`).
+2. **Портативная версия (без установки)**:
+   Распакуйте архив [`installer/windows/DownSort-Portable.zip`](installer/windows/DownSort-Portable.zip) и сразу запустите `DownSort.exe`.
+
+3. **Быстрая установка через скрипт**:
+   Запустите [`installer/windows/install.bat`](installer/windows/install.bat).
 
 ---
 
