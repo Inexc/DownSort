@@ -13,11 +13,11 @@ use windows::Win32::Graphics::Gdi::{
 };
 use windows::Win32::Media::{timeBeginPeriod, timeEndPeriod};
 use windows::Win32::UI::Shell::{
-    DefSubclassProc, ExtractIconExW, RemoveWindowSubclass, SetWindowSubclass,
+    DefSubclassProc, RemoveWindowSubclass, SetWindowSubclass,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
     EnumWindows, GetWindowTextW, GetWindowThreadProcessId, IsWindowVisible, PostMessageW,
-    SendMessageW, SetWindowTextW, ICON_BIG, ICON_SMALL, WM_DESTROY, WM_DISPLAYCHANGE,
+    SendMessageW, SetWindowTextW, HICON, ICON_BIG, ICON_SMALL, WM_DESTROY, WM_DISPLAYCHANGE,
     WM_DPICHANGED, WM_ENTERSIZEMOVE, WM_EXITSIZEMOVE, WM_MOVE, WM_MOVING, WM_SETICON, WM_TIMER,
 };
 
@@ -260,38 +260,69 @@ pub fn spawn_smooth_drag_monitor() {
                         let _ = SetWindowTextW(hwnd, w!("DownSort"));
                     }
 
-                    // 2. Load and set crisp multi-resolution icons for Taskbar and Titlebar
+                    // 2. Load and set crisp master multi-resolution icons for Taskbar (256px) and Titlebar (32px)
                     let exe_path = std::env::current_exe().unwrap_or_default();
                     let path_hstring = HSTRING::from(exe_path.as_os_str());
-                    let mut hicon_large = Default::default();
-                    let mut hicon_small = Default::default();
-                    let count = unsafe {
-                        ExtractIconExW(
+
+                    #[link(name = "user32")]
+                    extern "system" {
+                        fn PrivateExtractIconsW(
+                            szFileName: PCWSTR,
+                            nIconIndex: i32,
+                            cxIcon: i32,
+                            cyIcon: i32,
+                            phicon: *mut HICON,
+                            piconid: *mut u32,
+                            nIcons: u32,
+                            flags: u32,
+                        ) -> u32;
+                    }
+
+                    let mut hicon_large = HICON::default();
+                    let mut icon_id = 0u32;
+                    let count_large = unsafe {
+                        PrivateExtractIconsW(
                             PCWSTR(path_hstring.as_ptr()),
                             0,
-                            Some(&mut hicon_large),
-                            Some(&mut hicon_small),
+                            256,
+                            256,
+                            &mut hicon_large,
+                            &mut icon_id,
                             1,
+                            0,
                         )
                     };
-                    if count > 0 {
-                        unsafe {
-                            if !hicon_large.is_invalid() {
-                                let _ = SendMessageW(
-                                    hwnd,
-                                    WM_SETICON,
-                                    WPARAM(ICON_BIG as usize),
-                                    LPARAM(hicon_large.0 as isize),
-                                );
-                            }
-                            if !hicon_small.is_invalid() {
-                                let _ = SendMessageW(
-                                    hwnd,
-                                    WM_SETICON,
-                                    WPARAM(ICON_SMALL as usize),
-                                    LPARAM(hicon_small.0 as isize),
-                                );
-                            }
+
+                    let mut hicon_small = HICON::default();
+                    let count_small = unsafe {
+                        PrivateExtractIconsW(
+                            PCWSTR(path_hstring.as_ptr()),
+                            0,
+                            32,
+                            32,
+                            &mut hicon_small,
+                            &mut icon_id,
+                            1,
+                            0,
+                        )
+                    };
+
+                    unsafe {
+                        if count_large > 0 && !hicon_large.is_invalid() {
+                            let _ = SendMessageW(
+                                hwnd,
+                                WM_SETICON,
+                                WPARAM(ICON_BIG as usize),
+                                LPARAM(hicon_large.0 as isize),
+                            );
+                        }
+                        if count_small > 0 && !hicon_small.is_invalid() {
+                            let _ = SendMessageW(
+                                hwnd,
+                                WM_SETICON,
+                                WPARAM(ICON_SMALL as usize),
+                                LPARAM(hicon_small.0 as isize),
+                            );
                         }
                     }
 
